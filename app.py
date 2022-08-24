@@ -5,13 +5,17 @@ import board
 import asyncio
 import time
 import functools
-import json
-from aioinflux import InfluxDBClient
 from adafruit_pm25.i2c import PM25_I2C
 from sys import exit
-from weather import Weather
+from dotenv import load_dotenv, dotenv_values
+from pyopenweather.weather import Weather
+from influxdb_client import Point
+from influxdb_client.client.influxdb_client_async import InfluxDBClientAsync
+from pprint import pprint
 
 
+load_dotenv()
+config = {**dotenv_values()}
 
 i2c_bus = busio.I2C(board.SCL, board.SDA, frequency=100000)
 sgp30 = adafruit_sgp30.Adafruit_SGP30(i2c_bus)
@@ -23,8 +27,6 @@ weather = Weather()
 # separate temperature sensor to calibrate this one.
 bme_temperature_offset = 5
 
-HOST = '192.168.1.148'
-DB = 'airsensors'
 
 def run_in_executor(func):
     @functools.wraps(func)
@@ -92,31 +94,50 @@ async def get_aggregate_sensor_datum():
     bme680_datum = await get_bme680_datum()
     pm25_datum = await get_pm25_datum()
     aggregate_datum = {**sgp30_datum, **bme680_datum, **pm25_datum}
+    if VERBOSE:
+        pprint(aggregate_datum)
     return aggregate_datum
 
-async def get_and_insert_datum_into_influx(verbose=False):
+async def transform_datum_to_influx_point(datum):
     point = {
         'measurement': 'airsensors',
         'tags': {
             'host': 'airsensors',
             'location': 'home'
         },
-        'fields': await get_aggregate_sensor_datum()
+        'fields': datum
     }
-    async with InfluxDBClient(host=HOST, db=DB) as client:
-        await client.create_database(db=DB)
-        await client.write(point)
-        if verbose:
-            print(json.dumps(point['fields'], indent=2))
+    return point
+
+async def get_influx_client():
+    print("Getting client!")
+    client = InfluxDBClientAsync.from_env_properties()
+    return client
+
 
 async def main():
+    if WRITE_TO_DB:
+        client = await get_influx_client()
+        write_api = client.write_api()
+        bucket = config.get("INFLUX_BUCKET")
     while True:
-        await get_and_insert_datum_into_influx(verbose=True)
+        datum = await get_aggregate_sensor_datum()
+        point = await transform_datum_to_influx_point(datum)
+        if WRITE_TO_DB:
+            try:
+                await write_api.write(bucket=bucket, record=point)
+            except asyncio.exceptions.TimeoutError:
+                print(f"Timeout occured while writing: {point}")
         time.sleep(1)
+    if WRITE_TO_DB:
+        print("Closing connection!")
+        await write_api.close()
 
 
 if __name__ == '__main__':
     try:
-        asyncio.get_event_loop().run_until_complete(main())
+        VERBOSE = True
+        WRITE_TO_DB = True
+        asyncio.run(main())
     except KeyboardInterrupt:
         exit(0)
