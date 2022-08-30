@@ -5,6 +5,7 @@ import board
 from adafruit_pm25.i2c import PM25_I2C
 from decorators import run_in_executor
 from pprint import pprint
+from pyopenweather.weather import Weather
 
 
 i2c_bus = busio.I2C(board.SCL, board.SDA, frequency=100000)
@@ -15,8 +16,6 @@ pm25 = PM25_I2C(i2c_bus)
 # the sensor. This is usually around 5 degrees but varies by use. Use a
 # separate temperature sensor to calibrate this one.
 bme_temperature_offset = 5
-# Be quiet by default
-verbose = False
 
 
 @run_in_executor
