@@ -5,14 +5,12 @@ import board
 from adafruit_pm25.i2c import PM25_I2C
 from decorators import run_in_executor
 from pprint import pprint
-from pyopenweather.weather import Weather
 
 
 i2c_bus = busio.I2C(board.SCL, board.SDA, frequency=100000)
 sgp30 = adafruit_sgp30.Adafruit_SGP30(i2c_bus)
 bme680 = adafruit_bme680.Adafruit_BME680_I2C(i2c_bus)
 pm25 = PM25_I2C(i2c_bus)
-weather = Weather()
 # You will usually have to add an offset to account for the temperature of
 # the sensor. This is usually around 5 degrees but varies by use. Use a
 # separate temperature sensor to calibrate this one.
@@ -40,7 +38,7 @@ def get_sgp30_baselines():
     return baselines
 
 @run_in_executor
-def get_bme680_datum():
+def get_bme680_datum(weather):
     bme680.sea_level_pressure = weather.pressure
     temperature = (bme680.temperature + bme_temperature_offset)
     pressure = bme680.pressure
@@ -75,9 +73,13 @@ def get_pm25_datum():
     finally:
         return datum
 
-async def get_aggregate_sensor_datum():
+async def get_aggregate_sensor_datum(config, verbose=False):
+    lat = config.get("LATITUDE")
+    lon = config.get("LONGITUDE")
+    key = config.get("OPENWEATHER_API_KEY")
+    weather = Weather(lat=lat, long=lon, api_key=key)
     sgp30_datum = await get_sgp30_datum()
-    bme680_datum = await get_bme680_datum()
+    bme680_datum = await get_bme680_datum(weather)
     pm25_datum = await get_pm25_datum()
     aggregate_datum = {**sgp30_datum, **bme680_datum, **pm25_datum}
     if verbose:

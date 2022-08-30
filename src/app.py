@@ -37,7 +37,7 @@ class App:
     async def get_data(self) -> None:
         import drivers
         try:
-            datum = await drivers.get_aggregate_sensor_datum(verbose=self.verbose)
+            datum = await drivers.get_aggregate_sensor_datum(verbose=self.verbose, config=self.config)
             if self.write_data:
                 bucket = self.config.get("INFLUX_BUCKET")
                 record = await self.client.transform_datum_into_influx_point(datum)
