@@ -2,7 +2,7 @@ PROJ_DIR="`pwd`"
 SYSTEM_PYTHON=python3
 VENV_PYTHON="${PROJ_DIR}/venv/bin/python3"
 SOURCE_DIR="${PROJ_DIR}"
-APP_ENTRYPOINT="${SOURCE_DIR}/app.py"
+APP_ENTRYPOINT="${SOURCE_DIR}/"
 
 
 virtualenv:
@@ -26,7 +26,7 @@ environment: virtualenv venv deps
 
 start:
 	@echo "Starting App"
-	@${VENV_PYTHON} ${APP_ENTRYPOINT}
+	@${VENV_PYTHON} ${APP_ENTRYPOINT} --mode=normal --verbose --write
 
 emulator: dev-deps
 	@echo "Starting Emulator"

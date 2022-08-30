@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/ubuntu/git/pi_air_quality/venv/bin/python3 /home/ubuntu/git/pi_air_quality/src/app.py --mode=normal --verbose --write
+ExecStart=/home/ubuntu/git/pi_air_quality/venv/bin/python3 /home/ubuntu/git/pi_air_quality/src/ --mode=normal --verbose --write
 Restart=on-failure
 
 [Install]
