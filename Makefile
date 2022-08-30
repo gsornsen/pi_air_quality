@@ -18,12 +18,22 @@ deps:
 	@echo "Installing python dependencies"
 	@${VENV_PYTHON} -m pip install -r requirements.txt
 
+dev-deps:
+	@${VENV_PYTHON} -m pip install honcho wait-for-it
+
 environment: virtualenv venv deps
 	@echo "Setting up the python environment"
 
 start:
 	@echo "Starting App"
 	@${VENV_PYTHON} ${APP_ENTRYPOINT}
+
+emulator: dev-deps
+	@echo "Starting Emulator"
+	@${VENV_PYTHON} -m honcho start
+
+simulator:
+	@${VENV_PYTHON} src --mode=sim --verbose --write
 
 
 .PHONY: virtualenv venv deps environment start
