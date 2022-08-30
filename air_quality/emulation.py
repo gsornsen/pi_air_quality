@@ -53,4 +53,3 @@ if __name__ == '__main__':
         for datum in yield_fake_datum():
             print(json.dumps(datum, indent=2))
             sleep(1)
-

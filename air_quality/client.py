@@ -5,6 +5,7 @@ from asyncio.exceptions import TimeoutError
 
 Point = Dict[str, Any]
 
+
 class InfluxClient:
     def __init__(self, config: Dict):
         url = config.get("INFLUXDB_V2_URL")
