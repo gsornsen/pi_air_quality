@@ -4,7 +4,6 @@ from asyncio import sleep
 ranges = {
     'co2': [300, 600],
     'tvoc': [100, 300],
-    'sea_level_pressure': [1013, 1065],
     'temperature': [10, 35],
     'pressure': [1000, 1060],
     'altitude': [0, 2000],
