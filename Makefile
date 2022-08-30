@@ -2,7 +2,7 @@ PROJ_DIR="`pwd`"
 SYSTEM_PYTHON=python3
 VENV_PYTHON="${PROJ_DIR}/venv/bin/python3"
 SOURCE_DIR="${PROJ_DIR}"
-APP_ENTRYPOINT="${SOURCE_DIR}/"
+APP_ENTRYPOINT="${SOURCE_DIR}/air_quality"
 
 
 virtualenv:
@@ -19,7 +19,7 @@ deps:
 	@${VENV_PYTHON} -m pip install -r requirements.txt
 
 dev-deps:
-	@${VENV_PYTHON} -m pip install honcho wait-for-it
+	@${VENV_PYTHON} -m pip install honcho wait-for-it pytest
 
 environment: virtualenv venv deps
 	@echo "Setting up the python environment"
@@ -33,7 +33,11 @@ emulator: dev-deps
 	@${VENV_PYTHON} -m honcho start
 
 simulator:
-	@${VENV_PYTHON} src --mode=sim --verbose --write
+	@${VENV_PYTHON} air_quality --mode=sim --verbose --write
+
+test: dev-deps
+	@${VENV_PYTHON} -m pytest tests
 
 
-.PHONY: virtualenv venv deps environment start
+
+.PHONY: virtualenv venv deps environment start emulator simulator test
