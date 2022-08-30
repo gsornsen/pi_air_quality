@@ -4,7 +4,8 @@ if $(grep -q "Raspberry Pi" /proc/cpuinfo 2> /dev/null)
 then
     echo "Found Raspberry Pi CPU!"
 else
-    echo "This script is only for bootstrapping pi device!"
+    echo "This script is only for bootstrapping a pi device!"
+    echo "You can run the simulator without running this script..."
     exit 1
 fi
 
