@@ -20,6 +20,8 @@ deps:
 
 dev-deps:
 	@${VENV_PYTHON} -m pip install honcho wait-for-it pytest
+	@echo "Creating sim dotenv file if necessary"
+	@cp -n example.env sim.env
 
 environment: virtualenv venv deps
 	@echo "Setting up the python environment"
