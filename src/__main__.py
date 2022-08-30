@@ -11,9 +11,10 @@ async def main():
     operating_mode: str = 'sim' if 'sim' in args.mode.lower() else 'normal'
     write_flag: bool = True if args.write else False
     verbose_flag: bool = True if args.verbose else False
+    simulation_flag: bool = True if 'sim' in operating_mode else False
     config: Dict = await get_config(operating_mode)
     app = App(config, write_data=write_flag, verbose=verbose_flag)
-    await app.run(operating_mode)
+    await app.run(simulation_flag)
 
 
 async def sig_handler():

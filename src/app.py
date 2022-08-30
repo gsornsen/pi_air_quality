@@ -59,5 +59,4 @@ class App:
             if is_simulation:
                 await self.run_sim()
             else:
-                
                 await self.get_data()
