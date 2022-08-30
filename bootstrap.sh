@@ -1,4 +1,13 @@
-#!/bin/bash
+#!/bin/bash -e
+
+if $(grep -q "Raspberry Pi" /proc/cpuinfo 2> /dev/null)
+then
+    echo "Found Raspberry Pi CPU!"
+else
+    echo "This script is only for bootstrapping pi device!"
+    exit 1
+fi
+
 
 sudo apt update
 sudo apt install i2c-tools python3 python3-pip python-is-python3 python3-rpi.gpio
