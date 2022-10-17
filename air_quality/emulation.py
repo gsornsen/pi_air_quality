@@ -2,7 +2,7 @@ from numpy import arange
 from asyncio import sleep
 
 ranges = {
-    'co2': [300, 600],
+    'co2': [300, 1500],
     'tvoc': [100, 300],
     'temperature': [10, 35],
     'pressure': [1000, 1060],
