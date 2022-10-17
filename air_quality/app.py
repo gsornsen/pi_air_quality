@@ -48,6 +48,7 @@ class App:
             if self.write_data:
                 record = await self.client.transform_datum_into_influx_point(datum)
                 await self.write_point(self.bucket, record)
+                await self.post_to_ha(self.ha_token, self.ha_endpoint, datum)
         except asyncio.CancelledError:
             await self.tear_down()
 
