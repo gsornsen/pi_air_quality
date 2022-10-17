@@ -6,3 +6,4 @@ pandas
 python-dotenv
 pyopenweather
 influxdb_client
+aiohttp
